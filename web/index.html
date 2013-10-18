@@ -1,0 +1,26 @@
+<!doctype html>
+<html ng-app>
+  <head>
+    <title>Angular Calendar</title>
+    <script type="application/dart" src="calendar.dart"></script>
+    <script src="packages/browser/dart.js"></script>
+    <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+  </head>
+  <body>
+    <div class="container">
+    <h2>Angular Calendar</h2>
+    <div appt-controller> <!-- ng-controller="AppointmentCtrl" -->
+      <ul class="unstyled">
+        <li ng-repeat="appt in appointments">
+          {{appt.time}} {{appt.title}}
+        </li>
+      </ul>
+      <form ng-submit="addAppointment" class="form-inline">
+        <input type="text" ng-model="appointmentText" size="30"
+               placeholder="15:00 Learn Dart">
+        <input class="btn-primary" type="submit" value="add">
+      </form>
+    </div>
+    </div>
+  </body>
+</html>
