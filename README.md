@@ -1,6 +1,6 @@
 # Funky, Angular Calendar
 
-A simple Angular.dart (*Dart*) caledar application, mostly used for exploring.
+A simple [Angular.dart](https://github.com/angular/angular.dart) (*Dart*) calendar application, mostly used for exploring.
 
 To install:
 
@@ -9,6 +9,12 @@ To install:
 2. Run `pub get` to get dependencies.
 3. Start the server with `pub serve`.
 
-The application (barely working at this time) will be at: http://localhost:8080/index.html.
+The application will be at: http://localhost:8080/index.html.
 
 The “Basics” application demoing ng-model will be at: http://localhost:8080/basic.html.
+
+## More Information
+
+This code was created while exploring Angular.dart in my [blog series](http://japhr.blogspot.com/search/label/angular).
+
+The approach is similar to a [Backbone.js calendar](https://github.com/eee-c/Funky-Backbone.js-Calendar) that I wrote to support [Recipes with Backbone](http://recipeswithbackbone.com).
