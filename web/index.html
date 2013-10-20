@@ -11,14 +11,14 @@
     <h2>Angular Calendar</h2>
     <div appt-controller>
       <ul class="unstyled">
-        <li ng-repeat="appt in appointments">
+        <li ng-repeat="appt in day.appointments">
           {{appt.time}} {{appt.title}}
         </li>
       </ul>
       <form onsubmit="return false;" class="form-inline">
-        <input ng-model="appointmentText" type="text" size="30"
+        <input ng-model="day.newAppointmentText" type="text" size="30"
                placeholder="15:00 Learn Dart">
-        <input ng-click="addAppointment()" class="btn-primary" type="submit" value="add">
+        <input ng-click="day.add()" class="btn-primary" type="submit" value="add">
       </form>
     </div>
     </div>

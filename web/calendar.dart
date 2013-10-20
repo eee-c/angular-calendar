@@ -1,17 +1,17 @@
 import 'package:angular/angular.dart';
 
 @NgDirective(
-  selector: '[appt-controller]'
+  selector: '[appt-controller]',
+  publishAs: 'day'
 )
 class AppointmentCtrl {
-  AppointmentCtrl(Scope scope) {
-    scope
-      ..['appointments'] = [{'time': '08:00', 'title': 'Wake Up'}]
-      ..['addAppointment'] = (){
-            var newAppt = fromText(scope['appointmentText']);
-            scope['appointments'].add(newAppt);
-            scope['appointmentText'] = null;
-          };
+  List appointments = [{'time': '08:00', 'title': 'Wake Up'}];
+  String newAppointmentText;
+
+  void add() {
+    var newAppt = fromText(newAppointmentText);
+    appointments.add(newAppt);
+    newAppointmentText = null;
   }
 
   Map fromText(v) {
