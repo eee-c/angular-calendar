@@ -7,9 +7,9 @@ To install:
 0. Get [Dart](http://dartlang.org).
 1. Clone this repo.
 2. Run `pub get` to get dependencies.
-3. Start the server with `pub serve`.
+3. Start the server with `dart server.dart`.
 
-The application will be at: http://localhost:8080/index.html.
+The application will be at: http://localhost:8000/.
 
 The “Basics” application demoing ng-model will be at: http://localhost:8080/basic.html.
 

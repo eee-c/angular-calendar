@@ -1,18 +1,39 @@
 import 'package:angular/angular.dart';
+import 'package:angular/playback/playback_http.dart';
+import 'dart:html';
+import 'dart:convert';
 
 @NgDirective(
   selector: '[appt-controller]',
   publishAs: 'day'
 )
 class AppointmentCtrl {
-  List appointments = [{'time': '08:00', 'title': 'Wake Up'}];
+  List appointments = [];
   String newAppointmentText;
+
+  AppointmentCtrl(ServerCtrl server) {
+    server.init(this);
+  }
 
   void add() {
     var newAppt = fromText(newAppointmentText);
     appointments.add(newAppt);
     newAppointmentText = null;
+    HttpRequest.
+      request(
+        '/appointments',
+        method: 'POST',
+        sendData: JSON.encode(newAppt)
+      );
   }
+
+  // _loadAppointments() {
+  //   HttpRequest.
+  //     getString('/appointments').
+  //     then((responseText){
+  //       appointments = JSON.decode(responseText);
+  //     });
+  // }
 
   Map fromText(v) {
     var appt = {'time': '00:00', 'title': 'New Appointment'};
@@ -36,8 +57,24 @@ class AppointmentCtrl {
   }
 }
 
+class ServerCtrl {
+  Http _http;
+  ServerCtrl(this._http);
+
+  init(AppointmentCtrl cal) {
+    _http(method: 'GET', url: '/appointments').
+      then((HttpResponse res) {
+        res.data.forEach((d) {
+          cal.appointments.add(d);
+        });
+      });
+  }
+}
+
 main() {
   var module = new AngularModule()
+    ..type(ServerCtrl)
     ..type(AppointmentCtrl);
+
   bootstrapAngular([module]);
 }

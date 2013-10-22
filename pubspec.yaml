@@ -1,5 +1,9 @@
 name: angualar_calendar
 dependencies:
   angular: any
+  # Server dependencies
+  dirty: any
+  uuid: any
+  ansicolor: any
 dev_dependencies:
   unittest: any
