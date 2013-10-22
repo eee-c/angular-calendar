@@ -1,4 +1,4 @@
-name: angualar_calendar
+name: angular_calendar
 dependencies:
   angular: any
   # Server dependencies
