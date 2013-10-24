@@ -1,6 +1,4 @@
 import 'package:angular/angular.dart';
-import 'package:angular/playback/playback_http.dart';
-import 'dart:html';
 import 'dart:convert';
 
 @NgDirective(
@@ -10,21 +8,17 @@ import 'dart:convert';
 class AppointmentCtrl {
   List appointments = [];
   String newAppointmentText;
+  ServerCtrl _server;
 
-  AppointmentCtrl(ServerCtrl server) {
-    server.init(this);
+  AppointmentCtrl(this._server) {
+    _server.init(this);
   }
 
   void add() {
     var newAppt = fromText(newAppointmentText);
     appointments.add(newAppt);
     newAppointmentText = null;
-    HttpRequest.
-      request(
-        '/appointments',
-        method: 'POST',
-        sendData: JSON.encode(newAppt)
-      );
+    _server.add(newAppt);
   }
 
   // _loadAppointments() {
@@ -69,12 +63,8 @@ class ServerCtrl {
         });
       });
   }
-}
 
-main() {
-  var module = new AngularModule()
-    ..type(ServerCtrl)
-    ..type(AppointmentCtrl);
-
-  bootstrapAngular([module]);
+  add(Map record) {
+    _http(method: 'POST', url: '/appointments', data: JSON.encode(record));
+  }
 }
