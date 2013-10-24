@@ -3,8 +3,8 @@ import 'package:angular_calendar/calendar.dart';
 
 main() {
   var module = new AngularModule()
-    ..type(ServerCtrl)
-    ..type(AppointmentCtrl);
+    ..type(AppointmentBackend)
+    ..type(AppointmentController);
 
   bootstrapAngular([module]);
 }

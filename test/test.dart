@@ -8,7 +8,7 @@ import 'package:angular/mock/module.dart';
 
 import 'package:angular_calendar/calendar.dart';
 
-class ServerCtrlMock extends Mock implements ServerCtrl {}
+class AppointmentBackendMock extends Mock implements AppointmentBackend {}
 
 main(){
   group('Appointment controller', (){
@@ -16,8 +16,8 @@ main(){
     setUp((){
 
       var module = new AngularMockModule()
-        ..type(ServerCtrl)
-        ..type(AppointmentCtrl);
+        ..type(AppointmentBackend)
+        ..type(AppointmentController);
 
       bootstrapAngular([module]);
     });
@@ -28,11 +28,11 @@ main(){
 
     var server;
     setUp((){
-      server = new ServerCtrlMock();
+      server = new AppointmentBackendMock();
     });
 
     test('adding records to server', (){
-      var controller = new AppointmentCtrl(server);
+      var controller = new AppointmentController(server);
       controller.newAppointmentText = '00:00 Test!';
       controller.add();
 
@@ -52,7 +52,7 @@ main(){
         new HttpDefaults(new HttpDefaultHeaders()),
         new HttpInterceptors()
       );
-      server = new ServerCtrl(http);
+      server = new AppointmentBackend(http);
     });
 
     test('dummy', (){ expect(server, isNotNull); });

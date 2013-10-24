@@ -5,12 +5,12 @@ import 'dart:convert';
   selector: '[appt-controller]',
   publishAs: 'day'
 )
-class AppointmentCtrl {
+class AppointmentController {
   List appointments = [];
   String newAppointmentText;
-  ServerCtrl _server;
+  AppointmentBackend _server;
 
-  AppointmentCtrl(this._server) {
+  AppointmentController(this._server) {
     _server.init(this);
   }
 
@@ -48,11 +48,11 @@ class AppointmentCtrl {
   }
 }
 
-class ServerCtrl {
+class AppointmentBackend {
   Http _http;
-  ServerCtrl(this._http);
+  AppointmentBackend(this._http);
 
-  init(AppointmentCtrl cal) {
+  init(AppointmentController cal) {
     _http(method: 'GET', url: '/appointments').
       then((HttpResponse res)=> cal.appointments = res.data);
   }
