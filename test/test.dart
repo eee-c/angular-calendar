@@ -40,9 +40,31 @@ main(){
         getLogs(callsTo('add', {'time': '00:00', 'title': 'Test!'})).
         verify(happenedOnce);
     });
+
+    group('removing records', (){
+      var controller, record;
+      setUp((){
+        controller = new AppointmentController(server);
+        record = {'id': '42', 'title': 'Foo!'};
+        controller.appointments = [record];
+      });
+
+      test('removes it from the server', (){
+        controller.remove(record);
+
+        server.
+          getLogs(callsTo('remove', '42')).
+          verify(happenedOnce);
+      });
+
+      test('removes it from the collection', (){
+        controller.remove(record);
+        expect(controller.appointments.length, 0);
+      });
+    });
   });
 
-  group('Server Controller', (){
+  group('Appointment Backend', (){
     var server, http_backend;
     setUp((){
       http_backend = new MockHttpBackend();
@@ -55,13 +77,20 @@ main(){
       server = new AppointmentBackend(http);
     });
 
-    test('dummy', (){ expect(server, isNotNull); });
     test('add will POST for persistence', (){
       http_backend.
         expectPOST('/appointments', '{"foo":42}').
         respond('{"id:"1", "foo":42}');
 
       server.add({'foo': 42});
+    });
+
+    test('remove will DELETE record', (){
+      http_backend.
+        expectDELETE('/appointments/42').
+        respond('{}');
+
+      server.remove('42');
     });
   });
 

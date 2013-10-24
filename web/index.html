@@ -13,6 +13,9 @@
       <ul class="unstyled">
         <li ng-repeat="appt in day.appointments">
           {{appt.time}} {{appt.title}}
+          <a ng-click="day.remove(appt)">
+            <i class="icon-remove" ></i>
+          </a>
         </li>
       </ul>
       <form onsubmit="return false;" class="form-inline">

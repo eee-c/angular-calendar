@@ -20,6 +20,11 @@ class AppointmentController {
     _server.add(appointment);
   }
 
+  void remove(Map appointment) {
+    appointments.remove(appointment);
+    _server.remove(appointment['id']);
+  }
+
   Map _fetchAppointment() {
     var appointment = _fromText(newAppointmentText);
     newAppointmentText = null;
@@ -59,5 +64,9 @@ class AppointmentBackend {
 
   add(Map record) {
     _http(method: 'POST', url: '/appointments', data: JSON.encode(record));
+  }
+
+  remove(String id) {
+    _http(method: 'DELETE', url: '/appointments/${id}');
   }
 }
