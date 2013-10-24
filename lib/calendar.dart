@@ -15,21 +15,18 @@ class AppointmentCtrl {
   }
 
   void add() {
-    var newAppt = fromText(newAppointmentText);
-    appointments.add(newAppt);
-    newAppointmentText = null;
-    _server.add(newAppt);
+    var appointment = _fetchAppointment();
+    appointments.add(appointment);
+    _server.add(appointment);
   }
 
-  // _loadAppointments() {
-  //   HttpRequest.
-  //     getString('/appointments').
-  //     then((responseText){
-  //       appointments = JSON.decode(responseText);
-  //     });
-  // }
+  Map _fetchAppointment() {
+    var appointment = _fromText(newAppointmentText);
+    newAppointmentText = null;
+    return appointment;
+  }
 
-  Map fromText(v) {
+  Map _fromText(v) {
     var appt = {'time': '00:00', 'title': 'New Appointment'};
     if (v == null || v == '') return appt;
 
@@ -57,11 +54,7 @@ class ServerCtrl {
 
   init(AppointmentCtrl cal) {
     _http(method: 'GET', url: '/appointments').
-      then((HttpResponse res) {
-        res.data.forEach((d) {
-          cal.appointments.add(d);
-        });
-      });
+      then((HttpResponse res)=> cal.appointments = res.data);
   }
 
   add(Map record) {

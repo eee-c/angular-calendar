@@ -8,10 +8,7 @@ import 'package:angular/mock/module.dart';
 
 import 'package:angular_calendar/calendar.dart';
 
-class ServerCtrlMock extends Mock implements ServerCtrl {
-  Http _http;
-  ServerCtrl(Http this._http);
-}
+class ServerCtrlMock extends Mock implements ServerCtrl {}
 
 main(){
   group('Appointment controller', (){
