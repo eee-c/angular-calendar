@@ -1,6 +1,7 @@
 name: angular_calendar
 dependencies:
-  angular: any
+  angular:
+    path: ../angular.dart
   # Server dependencies
   dirty: any
   uuid: any
