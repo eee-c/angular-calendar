@@ -8,12 +8,17 @@ import 'dart:convert';
 class DayViewController {
   String title = 'Default Title';
   String time = '08:00';
+  AppointmentBackend _server;
 
-  // DayViewController(RoutingHelper route) {
-  //   print(route);
-  // }
+  DayViewController(Scope scope, this._server) {
+    _server.
+      get(scope["dayId"]).
+      then((rec) {
+        title = rec['title'];
+        time = rec['time'];
+      });
+  }
 }
-
 
 @NgDirective(
   selector: '[appt-controller]',
@@ -75,6 +80,10 @@ class AppointmentBackend {
     _http(method: 'GET', url: '/appointments').
       then((HttpResponse res)=> cal.appointments = res.data);
   }
+
+  get(String id) =>
+    _http(method: 'GET', url: '/appointments/${id}').
+      then((HttpResponse res)=> res.data);
 
   add(Map record) {
     _http(method: 'POST', url: '/appointments', data: JSON.encode(record));

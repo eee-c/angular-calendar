@@ -13,6 +13,9 @@ main() {
 }
 
 class CalendarRouter implements RouteInitializer {
+  Scope _scope;
+  CalendarRouter(this._scope);
+
   void init(Router router, ViewFactory view) {
     router.root
       ..addRoute(
@@ -23,7 +26,10 @@ class CalendarRouter implements RouteInitializer {
       ..addRoute(
           name: 'day-view',
           path: '/days/:dayId',
-          enter: view('partials/day_view.html')
+          enter: (RouteEvent e) {
+            e.route.parameters.forEach((k,v) { _scope[k] = v; });
+            return view('partials/day_view.html')(e);
+          }
         );
   }
 }
