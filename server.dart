@@ -21,6 +21,11 @@ main() {
         return Appointments.post(req);
       }
 
+      if (req.method == 'GET' &&
+          new RegExp(r"^/appointments/[-\w\d]+$").hasMatch(req.uri.path)) {
+        return Appointments.get(req);
+      }
+
       if (req.method == 'DELETE' &&
           new RegExp(r"^/appointments/[-\w\d]+$").hasMatch(req.uri.path)) {
         return Appointments.delete(req);
@@ -72,6 +77,15 @@ class Appointments {
       res.write(JSON.encode(graphic_novel));
       res.close();
     });
+  }
+
+  static get(HttpRequest req) {
+    HttpResponse res = req.response;
+    var r = new RegExp(r"^/appointments/([-\w\d]+)");
+    var id = r.firstMatch(req.uri.path)[1];
+
+    res.write(JSON.encode(db[id]));
+    res.close();
   }
 
   static delete(HttpRequest req) {
