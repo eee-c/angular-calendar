@@ -2,6 +2,20 @@ import 'package:angular/angular.dart';
 import 'dart:convert';
 
 @NgDirective(
+  selector: '[day-view-controller]',
+  publishAs: 'appt'
+)
+class DayViewController {
+  String title = 'Default Title';
+  String time = '08:00';
+
+  // DayViewController(RoutingHelper route) {
+  //   print(route);
+  // }
+}
+
+
+@NgDirective(
   selector: '[appt-controller]',
   publishAs: 'day'
 )

@@ -9,21 +9,7 @@
   <body>
     <div class="container">
     <h2>Angular Calendar</h2>
-    <div appt-controller>
-      <ul class="unstyled">
-        <li ng-repeat="appt in day.appointments">
-          {{appt.time}} {{appt.title}}
-          <a ng-click="day.remove(appt)">
-            <i class="icon-remove" ></i>
-          </a>
-        </li>
-      </ul>
-      <form onsubmit="return false;" class="form-inline">
-        <input ng-model="day.newAppointmentText" type="text" size="30"
-               placeholder="15:00 Learn Dart">
-        <input ng-click="day.add()" class="btn-primary" type="submit" value="add">
-      </form>
-    </div>
+    <ng-view></ng-view>
     </div>
   </body>
 </html>
