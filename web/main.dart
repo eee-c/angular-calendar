@@ -26,10 +26,7 @@ class CalendarRouter implements RouteInitializer {
       ..addRoute(
           name: 'day-view',
           path: '/days/:dayId',
-          enter: (RouteEvent e) {
-            e.route.parameters.forEach((k,v) { _scope[k] = v; });
-            return view('partials/day_view.html')(e);
-          }
+          enter: view('partials/day_view.html')
         );
   }
 }
