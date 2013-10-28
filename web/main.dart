@@ -6,5 +6,5 @@ main() {
     ..type(AppointmentBackend)
     ..type(AppointmentController);
 
-  bootstrapAngular([module]);
+  ngBootstrap(module: module);
 }

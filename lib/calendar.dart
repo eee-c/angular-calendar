@@ -1,7 +1,7 @@
 import 'package:angular/angular.dart';
 import 'dart:convert';
 
-@NgDirective(
+@NgController(
   selector: '[appt-controller]',
   publishAs: 'day'
 )
