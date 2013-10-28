@@ -69,6 +69,8 @@ main(){
     setUp((){
       http_backend = new MockHttpBackend();
       var http = new Http(
+        new BrowserCookies(),
+        new LocationWrapper(),
         new UrlRewriter(),
         http_backend,
         new HttpDefaults(new HttpDefaultHeaders()),
