@@ -1,22 +1,32 @@
 import 'package:angular/angular.dart';
+import 'package:angular/routing/module.dart';
 import 'dart:convert';
 
 @NgDirective(
   selector: '[day-view-controller]',
   publishAs: 'appt'
 )
-class DayViewController {
+class DayViewController implements NgDetachAware {
+  String id;
   String title = 'Default Title';
   String time = '08:00';
   AppointmentBackend _server;
+  RouteHandle route;
 
-  DayViewController(Scope scope, this._server) {
+  DayViewController(RouteProvider router, this._server) {
+    route = router.route;
+    id = route.parameters["dayId"];
     _server.
-      get(scope["dayId"]).
+      get(id).
       then((rec) {
         title = rec['title'];
         time = rec['time'];
       });
+  }
+
+  detach() {
+    // The route handle must be discarded.
+    route.discard();
   }
 }
 
