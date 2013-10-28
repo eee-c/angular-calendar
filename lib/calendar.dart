@@ -14,8 +14,9 @@ class DayViewController implements NgDetachAware {
   RouteHandle route;
 
   DayViewController(RouteProvider router, this._server) {
-    route = router.route;
-    id = route.parameters["dayId"];
+    route = router.route.newHandle();
+
+    id = router.route.parameters["dayId"];
     _server.
       get(id).
       then((rec) {
