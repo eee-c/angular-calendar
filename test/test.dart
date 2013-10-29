@@ -12,73 +12,66 @@ class AppointmentBackendMock extends Mock implements AppointmentBackend {}
 
 main(){
   group('Appointment controller', (){
-    /*
     setUp((){
-
-      var module = new AngularMockModule()
-        ..type(AppointmentBackend)
-        ..type(AppointmentController);
-
-      bootstrapAngular([module]);
+      setUpInjector();
+      var server = new AppointmentBackendMock();
+      module((Module _) => _
+        ..value(AppointmentBackend, server)
+        ..type(AppointmentController)
+      );
     });
-    */
-
-    // Scope scope;
-    // setUp(inject((Scope rootScope) { scope = rootScope; }));
-
-    var server;
-    setUp((){
-      server = new AppointmentBackendMock();
-    });
+    tearDown(tearDownInjector);
 
     test('adding records to server', (){
-      var controller = new AppointmentController(server);
-      controller.newAppointmentText = '00:00 Test!';
-      controller.add();
+      inject((AppointmentController controller, AppointmentBackend server) {
+        controller.newAppointmentText = '00:00 Test!';
+        controller.add();
 
-      server.
-        getLogs(callsTo('add', {'time': '00:00', 'title': 'Test!'})).
-        verify(happenedOnce);
+        server.
+          getLogs(callsTo('add', {'time': '00:00', 'title': 'Test!'})).
+          verify(happenedOnce);
+      });
     });
 
     group('removing records', (){
-      var controller, record;
-      setUp((){
-        controller = new AppointmentController(server);
-        record = {'id': '42', 'title': 'Foo!'};
-        controller.appointments = [record];
-      });
+      var record = {'id': '42', 'title': 'Foo!'};
 
       test('removes it from the server', (){
-        controller.remove(record);
+        inject((AppointmentController controller, AppointmentBackend server) {
+          controller.appointments = [record];
+          controller.remove(record);
 
-        server.
-          getLogs(callsTo('remove', '42')).
-          verify(happenedOnce);
+          server.
+            getLogs(callsTo('remove', '42')).
+            verify(happenedOnce);
+        });
       });
 
       test('removes it from the collection', (){
-        controller.remove(record);
-        expect(controller.appointments.length, 0);
+        inject((AppointmentController controller, AppointmentBackend server) {
+          controller.appointments = [record];
+          controller.remove(record);
+
+          expect(controller.appointments.length, 0);
+        });
       });
     });
   });
 
   group('Appointment Backend', (){
-    var http_backend;
     setUp(() {
       setUpInjector();
-      module((Module module) {
-        http_backend = new MockHttpBackend();
-        module
-          ..value(HttpBackend, http_backend)
-          ..type(AppointmentBackend);
-      });
+      module((Module _) => _
+        ..type(MockHttpBackend)
+        ..type(AppointmentBackend)
+      );
     });
 
+    tearDown(tearDownInjector);
+
     test('add will POST for persistence', (){
-      inject((AppointmentBackend server) {
-        http_backend.
+      inject((AppointmentBackend server, HttpBackend http) {
+        http.
           expectPOST('/appointments', '{"foo":42}').
           respond('{"id:"1", "foo":42}');
 
@@ -86,12 +79,15 @@ main(){
       });
     });
 
-    skip_test('remove will DELETE record', (){
-      http_backend.
-        expectDELETE('/appointments/42').
-        respond('{}');
+    test('remove will DELETE record', (){
+      inject((AppointmentBackend server, HttpBackend http) {
+        http.
+          expectDELETE('/appointments/42').
+          respond('{}');
 
-      server.remove('42');
+        server.remove('42');
+      });
+
     });
   });
 
