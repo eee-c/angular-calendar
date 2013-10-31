@@ -10,7 +10,57 @@ import 'package:angular_calendar/calendar.dart';
 
 class AppointmentBackendMock extends Mock implements AppointmentBackend {}
 
+const HTML =
+'''<div appt-controller>
+     <ul>
+       <li ng-repeat="appt in day.appointments">
+         {{appt.time}} {{appt.title}}
+         <a ng-click="day.remove(appt)">
+           <i class="icon-remove" ></i>
+         </a>
+       </li>
+     </ul>
+     <form onsubmit="return false;">
+       <input ng-model="day.newAppointmentText" type="text">
+       <input ng-click="day.add()" type="submit" value="add">
+     </form>
+   </div>''';
+
 main(){
+  group('Appointment Application', (){
+    setUp((){
+      setUpInjector();
+      module((Module _) => _
+        ..type(MockHttpBackend)
+        ..type(AppointmentBackend)
+        ..type(AppointmentController)
+        ..type(TestBed)
+      );
+    });
+    tearDown(tearDownInjector);
+
+    test('Retrieves records from HTTP backend', (){
+      inject((TestBed tb, HttpBackend http) {
+        http.
+          whenGET('/appointments').
+          respond(200, '[{"id":"42", "title":"Test Appt #1", "time":"00:00"}]');
+
+        tb.compile(HTML);
+
+        Timer.run(expectAsync0(() {
+          http.responses[0]();
+
+          Timer.run(expectAsync0(() {
+            tb.rootScope.$digest();
+
+            var element = tb.rootElement.query('ul');
+            expect(element.text, contains('Test Appt #1'));
+          }));
+        }));
+      });
+    });
+  });
+
   group('Appointment controller', (){
     setUp((){
       setUpInjector();
