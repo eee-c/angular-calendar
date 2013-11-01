@@ -1,4 +1,4 @@
-import 'package:unittest/unittest.dart';
+import 'package:scheduled_test/scheduled_test.dart';
 import 'package:unittest/mock.dart';
 import 'dart:html';
 import 'dart:async';
@@ -36,10 +36,11 @@ main(){
         ..type(AppointmentController)
         ..type(TestBed)
       );
-    });
-    tearDown(tearDownInjector);
 
-    test('Retrieves records from HTTP backend', (){
+      currentSchedule.onComplete.schedule(tearDownInjector);
+    });
+
+    test('Retrieves records from HTTP backend',
       inject((TestBed tb, HttpBackend http) {
         http.
           whenGET('/appointments').
@@ -47,18 +48,16 @@ main(){
 
         tb.compile(HTML);
 
-        Timer.run(expectAsync0(() {
-          http.responses[0]();
-
-          Timer.run(expectAsync0(() {
-            tb.rootScope.$digest();
-
-            var element = tb.rootElement.query('ul');
-            expect(element.text, contains('Test Appt #1'));
-          }));
-        }));
-      });
-    });
+        schedule(()=> http.flush());
+        schedule(()=> tb.rootScope.$digest());
+        schedule((){
+          expect(
+            tb.rootElement.query('ul').text,
+            contains('Test Appt #1')
+          );
+        });
+      })
+    );
   });
 
   group('Appointment controller', (){
@@ -69,8 +68,8 @@ main(){
         ..value(AppointmentBackend, server)
         ..type(AppointmentController)
       );
+      currentSchedule.onComplete.schedule(tearDownInjector);
     });
-    tearDown(tearDownInjector);
 
     test('adding records to server', (){
       inject((AppointmentController controller, AppointmentBackend server) {
@@ -115,9 +114,8 @@ main(){
         ..type(MockHttpBackend)
         ..type(AppointmentBackend)
       );
+      currentSchedule.onComplete.schedule(tearDownInjector);
     });
-
-    tearDown(tearDownInjector);
 
     test('add will POST for persistence', (){
       inject((AppointmentBackend server, HttpBackend http) {
