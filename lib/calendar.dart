@@ -2,6 +2,25 @@ import 'package:angular/angular.dart';
 import 'package:angular/routing/module.dart';
 import 'dart:convert';
 
+class CalendarRouter implements RouteInitializer {
+  Scope _scope;
+  CalendarRouter(this._scope);
+
+  void init(Router router, ViewFactory view) {
+    router.root
+      ..addRoute(
+          defaultRoute: true,
+          name: 'day-list',
+          enter: view('partials/day_list.html')
+        )
+      ..addRoute(
+          name: 'day-view',
+          path: '/days/:dayId',
+          enter: view('partials/day_view.html')
+        );
+  }
+}
+
 @NgDirective(
   selector: '[day-view-controller]',
   publishAs: 'appt'
@@ -39,8 +58,9 @@ class AppointmentController {
   List appointments = [];
   String newAppointmentText;
   AppointmentBackend _server;
+  Router _router;
 
-  AppointmentController(this._server) {
+  AppointmentController(this._server, this._router) {
     _server.init(this);
   }
 
@@ -53,6 +73,10 @@ class AppointmentController {
   void remove(Map appointment) {
     appointments.remove(appointment);
     _server.remove(appointment['id']);
+  }
+
+  void navigate(Map appointment) {
+    _router.route('/days/${appointment["id"]}');
   }
 
   Map _fetchAppointment() {

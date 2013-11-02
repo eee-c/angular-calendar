@@ -26,6 +26,35 @@ const HTML =
      </form>
    </div>''';
 
+const LIST_HTML =
+'''<div appt-controller>
+     <ul>
+       <li ng-repeat="appt in day.appointments">
+         <a ng-click="day.navigate(appt)">{{appt.time}} {{appt.title}}</a>
+         <a ng-click="day.remove(appt)">
+           <i class="icon-remove" ></i>
+         </a>
+       </li>
+     </ul>
+     <form onsubmit="return false;">
+       <input ng-model="day.newAppointmentText" type="text">
+       <input ng-click="day.add()" type="submit" value="add">
+     </form>
+   </div>''';
+
+const VIEW_HTML =
+'''<div ng-bind-route="day-view">
+     <div day-view-controller>
+       <dl class="dl-horizontal">
+         <dt>Title</dt>
+         <dd>{{appt.title}}</dd>
+         <dt>Time</dt>
+         <dd>{{appt.time}}</dd>
+       </dl>
+     </div>
+   </div>''';
+
+
 main(){
   group('Appointment Application', (){
 
@@ -94,7 +123,75 @@ main(){
         );
       });
     });
+  });
 
+  group('Multi-page', (){
+    var tb, http;
+
+    setUp((){
+      // 1. Setup and teardown test injector
+      setUpInjector();
+      currentSchedule.onComplete.schedule(tearDownInjector);
+
+      // 2. Build test module, including application classes
+      module((Module _) => _
+        ..type(TestBed)
+        ..type(MockHttpBackend)
+        ..type(AppointmentBackend)
+        ..type(AppointmentController)
+        ..type(DayViewController)
+        ..type(RouteInitializer, implementedBy: CalendarRouter)
+      );
+
+      // 3. Inject test bed and Http for test expectations and HTTP stubbing
+      var router;
+      inject((TestBed _t, HttpBackend _h, Router _r, TemplateCache _cache) {
+        tb = _t; http = _h; router = _r;
+
+        _cache.put('partials/day_list.html', new HttpResponse(200, LIST_HTML));
+        _cache.put('partials/day_view.html', new HttpResponse(200, VIEW_HTML));
+      });
+
+      // 4. Associate test module with HTML
+      tb.compile('<ng-view></ng-view>');
+
+      // 5. Access the default application route
+      schedule(()=> router.route(''));
+
+      // 6. Stub HTTP request made on module initialization
+      http.
+        whenGET('/appointments').
+        respond(200, '[{"id":"42", "title":"Test Appt #1", "time":"00:00"}]');
+
+      // 7. Flush the response stubbed for the initial request
+      schedule(()=> http.flush());
+
+      // 8. Trigger updates of bound variables in the HTML
+      schedule(()=> tb.rootScope.$digest());
+    });
+
+    test('Access to the day view', (){
+      http.
+        whenGET('/appointments/42').
+        respond(200, '{"id":"42", "title":"Test Appt #1", "time":"00:00"}');
+
+      schedule((){
+        tb.rootElement.
+          queryAll('a').
+          where((_)=> _.text.contains('Test Appt #1')).
+          first.
+          click();
+      });
+      schedule(()=> http.flush());
+      schedule(()=> tb.rootScope.$digest());
+
+      schedule((){
+        expect(
+          tb.rootElement.query('dl').text,
+          contains('Test Appt #1')
+        );
+      });
+    });
   });
 
   group('Appointment controller', (){
