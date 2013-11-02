@@ -28,36 +28,73 @@ const HTML =
 
 main(){
   group('Appointment Application', (){
+
+    var tb, http;
+
     setUp((){
+      // 1. Setup and teardown test injector
       setUpInjector();
+      currentSchedule.onComplete.schedule(tearDownInjector);
+
+      // 2. Build test module, including application classes
       module((Module _) => _
+        ..type(TestBed)
         ..type(MockHttpBackend)
         ..type(AppointmentBackend)
         ..type(AppointmentController)
-        ..type(TestBed)
       );
 
-      currentSchedule.onComplete.schedule(tearDownInjector);
+      // 3. Inject test bed and Http for test expectations and HTTP stubbing
+      inject((TestBed _t, HttpBackend _h) {tb = _t; http = _h;});
+
+      // 4. Associate test module with HTML
+      tb.compile(HTML);
+
+      // 5. Stub HTTP request made on module initialization
+      http.
+        whenGET('/appointments').
+        respond(200, '[{"id":"42", "title":"Test Appt #1", "time":"00:00"}]');
+
+      // 6. Flush the response stubbed for the initial request
+      schedule(()=> http.flush());
+
+      // 7. Trigger updates of bound variables in the HTML
+      schedule(()=> tb.rootScope.$digest());
     });
 
-    test('Retrieves records from HTTP backend',
-      inject((TestBed tb, HttpBackend http) {
-        http.
-          whenGET('/appointments').
-          respond(200, '[{"id":"42", "title":"Test Appt #1", "time":"00:00"}]');
+    test('Retrieves records from HTTP backend', (){
+      schedule((){
+        expect(
+          tb.rootElement.query('ul').text,
+          contains('Test Appt #1')
+        );
+      });
+    });
 
-        tb.compile(HTML);
+    test('Add a record', (){
+      http.
+        whenPOST('/appointments', '{"time":"23:59","title":"Go to bed"}').
+        respond(201, '{"id":"42", "title":"Go to bed", "time":"23:59"}');
 
-        schedule(()=> http.flush());
-        schedule(()=> tb.rootScope.$digest());
-        schedule((){
-          expect(
-            tb.rootElement.query('ul').text,
-            contains('Test Appt #1')
-          );
-        });
-      })
-    );
+      schedule((){
+        var el = tb.rootElement.query('input[type=text]')
+          ..value = '23:59 Go to bed';
+        tb.triggerEvent(el, 'change');
+
+        tb.rootElement.
+          query('input[type=submit]').
+          click();
+      });
+      schedule(()=> http.flush());
+      schedule(()=> tb.rootScope.$digest());
+      schedule((){
+        expect(
+          tb.rootElement.query('ul').text,
+          contains('Go to bed')
+        );
+      });
+    });
+
   });
 
   group('Appointment controller', (){
